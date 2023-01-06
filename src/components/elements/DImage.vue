@@ -1,6 +1,6 @@
 <template>
     <div class="d-element d-image" :style="elementStyle">
-        <img class="canvas-img" :src="item.value"/>
+        <img class="canvas-img" :src="item.value" :onerror="defaultImg"/>
     </div>
 </template>
 
@@ -16,6 +16,9 @@ export default {
         }
     },
     computed: {
+        defaultImg() {
+            return 'this.src="' + require('@/assets/logo.png') + '"';
+        },
         elementStyle: {
             get() {
                 const style = {

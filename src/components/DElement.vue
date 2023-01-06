@@ -14,12 +14,26 @@
             <span class="canvas-text">未知组件类型:{{item.type}}</span>
         </template>
 
+        <!-- 旋转图标 -->
+        <div class="drag-icon"
+            v-if="altKey"
+            @mousedown="activeItem"
+            @mousedown.stop="rotateDiv($event)"
+            @mouseup.stop="clearEvent($event)">
+            <i class="icofont-rotation" title="旋转"></i>
+        </div>
         <!-- 拖拽图标 -->
         <div class="drag-icon"
+            v-else
             @mousedown="activeItem"
             @mousedown.stop="dragDiv($event)"
             @mouseup.stop="clearEvent($event)">
-            <i class="icofont-drag"></i>
+            <i class="icofont-drag" title="移动"></i>
+        </div>
+
+        <!-- 元素中心点 -->
+        <div class="anchor-center" :id="`element_anchor_center_${item.id}`">
+            <i class="icofont-focus"></i>
         </div>
         <!-- 宽度改变组件 -->
         <div class="resize-handle x-handle x-handle-left"
@@ -49,6 +63,10 @@ export default {
         DText,DImage
     },
     props: {
+        value: {
+            type: Object,
+            default: () =>  { return {type: 'text', width: 120, height: 20, left: 0, top: 0, value:'Example Text.', styles: {}}}
+        },
         width: {
             type: Number,
             default: 100,
@@ -75,10 +93,18 @@ export default {
             type: Number,
             default: 2
         },
-        value: {
-            type: Object,
-            default: () =>  { return {type: 'text', width: 120, height: 20, left: 0, top: 0, value:'Example Text.', styles: {}}}
+        altKey: {
+            type: Boolean,
+            default: false,
         },
+        ctrlKey: {
+            type: Boolean,
+            default: false,
+        },
+        shiftKey: {
+            type: Boolean,
+            default: false,
+        }
     },
     computed:{
         item: {
@@ -96,6 +122,7 @@ export default {
                 top: this.item.top+'px',
                 width: this.item.width+'px',
                 height: this.item.height+'px',
+                transform: 'rotate('+this.item.rotate+'deg)',
                 ...this.item.styles
             };
         }
@@ -112,6 +139,57 @@ export default {
             this.$emit('select', this.item.id);
         },
 
+        /**
+         * 计算角度
+         * @param {Array} cen 基准点 
+         * @param {Array} first 起始点
+         * @param {Array} second 结束点
+         */
+        calcAngle(anchor, start, end) {
+            //2个点之间的角度获取
+            let c1 = Math.atan2(start[1] - anchor[1], start[0] - anchor[0]) * 180 / (Math.PI);
+            let c2 = Math.atan2(end[1] - anchor[1], end[0] - anchor[0]) * 180 / (Math.PI);
+            let angle;
+            c1 = c1 <= -90 ? (360 + c1) : c1;
+            c2 = c2 <= -90 ? (360 + c2) : c2;
+            //夹角获取
+            angle = Math.floor(c2 - c1);
+            angle = angle < 0 ? angle + 360 : angle;
+            return angle;
+        },
+        /**
+         * 旋转
+         */
+        rotateDiv(event) {
+            const {rotate: startAngle, id} = this.item;
+            // 获取基准点
+            let anchorEle = document.getElementById(`element_anchor_center_${id}`);
+            let {left, top, width, height} = anchorEle.getBoundingClientRect();
+            const anchorPoint = [left+width/2, top+height/2];
+            let startX = event.clientX;
+            let startY = event.clientY;
+            document.onmouseup = () => {
+                document.onmousemove = null;
+            }
+            document.onmousemove = e => {
+                let angle = this.calcAngle(anchorPoint, [startX, startY], [e.clientX, e.clientY]);
+                let deg;
+                // 赋值的旋转角度
+                let rotate;
+
+                // 顺时针旋转
+                if (e.clientX - startX > 0) {
+                    deg = startAngle + angle;
+                    rotate = deg > 360 ? deg - 360 : deg;
+                } else {
+                    // 逆时针旋转
+                    angle = 360 - angle;
+                    deg = startAngle - angle;
+                    rotate = deg < 0 ? deg + 360 : deg;
+                }
+                this.item.rotate = rotate;
+            }
+        },
         // 区块拖动
         dragDiv(event) {
             let startX = event.clientX;

@@ -64,11 +64,20 @@ $transparent: #fff0;
 
     /* 组件区域 */
     .d-components {
-        width: calc(0.2 * $canvasWidth);
-        height: $canvasHeight;
+        width: calc(0.2 * $canvasWidth - 40px);
+        height: calc($canvasHeight - 40px);
         position: relative;
         float: left;
+        padding: 20px;
         background-color: $componentsPanelBgColor;
+
+        .d-components-kit {
+            width: 50px;
+            height: 50px;
+            border: 1px solid $inActiveColor;
+            float: left;
+            margin: 5px;
+        }
     }
 
     /* 绘画区域 */
@@ -85,7 +94,7 @@ $transparent: #fff0;
         scrollbar-color: #d4aa70 #e4e4e4;
         transition: scrollbar-color 0.3s ease-out;
         
-        .d-drawer-container[penetrate=true] {
+        .d-drawer-container[ctrlKey=true] {
             .d-drawer-container-layer {
 
                 .d-drawer-container-element {
@@ -99,10 +108,27 @@ $transparent: #fff0;
                 }
             }
         }
+        .d-drawer-container[altKey=true] {
+            .d-drawer-container-layer[active=true] {
+                .d-drawer-container-element {
+                    .anchor-center {
+                        display: unset;
+                    }
+                }
+                .d-drawer-container-element:hover {
+                    .anchor-center {
+                        display: unset;
+                    }
+                    .drag-icon {
+                        display: unset;
+                        cursor: grab;
+                    }
+                }
+            }
+        }
         .d-drawer-container {
             display: block;
-            float: left;
-            margin: 50px;
+            margin: 50px auto;
             overflow: hidden;
             box-shadow: 0px 0px 10px 0px;
 
@@ -152,10 +178,22 @@ $transparent: #fff0;
                             color: #ffffff;
                         }
                     }
+                    .anchor-center {
+                        width: 12px;
+                        height: 12px;
+                        top: calc(50% - 6px);
+                        left: calc(50% - 6px);
+                        position: absolute;
+                        font-size: 12px;
+                        display: none;
+                        line-height: 12px;
+                        text-align: center;
+
+                    }
                     .resize-handle {
                         width: 5px;
                         height: 5px;
-                        background: $activeColor;
+                        background-color: $activeColor;
                         position: absolute;
                         z-index: 11;
                         display: none;

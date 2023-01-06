@@ -7,8 +7,14 @@
             <d-element
                 :data-key="`layer_element_${layer.id}_${index}_${e.id}_${e.active}`"
                 :key="`layer_element_${layer.id}_${index}_${e.id}_${e.active}`" 
-                :scale="scale" :maxWidth="width" :maxHeight="height" 
-                :value="e" @select="activeElement"
+                :scale="scale"
+                :maxWidth="width"
+                :maxHeight="height" 
+                :ctrlKey="ctrlKey"
+                :altKey="altKey"
+                :shiftKey="shiftKey"
+                :value="e"
+                @select="activeElement"
             />
         </template>
         
@@ -19,11 +25,14 @@
 import DElement from './DElement.vue'
 export default {
     name: 'DLayer',
-
     components: {
         DElement
     },
     props: {
+        value: {
+            type: Object,
+            default: () => {}
+        },
         width: {
             type: Number,
             default: 100,
@@ -40,25 +49,29 @@ export default {
             type: Number,
             default: 1,
         },
-        value: {
-            type: Object,
-            default: () => {}
+        altKey: {
+            type: Boolean,
+            default: false,
         },
+        ctrlKey: {
+            type: Boolean,
+            default: false,
+        },
+        shiftKey: {
+            type: Boolean,
+            default: false,
+        }
     },
     computed: {
-        layer() {
-            return this.value;
-        },
-    },
-    watch: {
         layer: {
-            handler(newVal, oldVal) {
-                if (newVal != oldVal) {
-                    this.$emit('input', newVal);
-                }
+            get() {
+                return this.value;
             },
-            deep: true
-        }
+            set(val) {
+                this.$emit('input', val);
+            }
+            
+        },
     },
     data() {
         return {

@@ -1,10 +1,21 @@
 <template>
     <div class="d-canvas" @contextmenu.prevent>
         <div class="d-components">
+            <div class="d-components-kit" component-type="text" draggable="true" @mousedown="addElement($event)">
+                <i class="icofont-font"></i>
+                文字
+            </div>
+            <div class="d-components-kit" component-type="image" draggable="true" @mousedown="addElement($event)">
+                <i class="icofont-image"></i>
+                图片
+            </div>
         </div>
         <div class="d-drawer" @click="drawerClick">
             <div class="d-drawer-container"
-                :penetrate="ctrlHold"
+                id="d-drawer-container"
+                :ctrlKey="ctrlKey"
+                :altKey="altKey"
+                :shiftKey="shiftKey"
                 :style="containerStyle">
                 <d-layer 
                     v-for="(layer, index) in layers"
@@ -14,6 +25,9 @@
                     :height="page.height" 
                     :zIndex="layers.length - index"
                     :scale="scale"
+                    :ctrlKey="ctrlKey"
+                    :altKey="altKey"
+                    :shiftKey="shiftKey"
                     @elementSelect="selectElement"
                 />
             </div>
@@ -99,7 +113,9 @@ export default {
     data() {
         return {
             scale: 1,
-            ctrlHold: false,
+            ctrlKey: false,
+            altKey: false,
+            shiftKey: false,
             page: this.value,
             layers: [],
         };
@@ -132,6 +148,49 @@ export default {
     },
     methods: {
 
+        addElement(e) {
+            let elementType = e.target.getAttribute("component-type");
+            for(let layer of this.layers) {
+                if (layer.active) {
+                    const itemId = `${layer.id}_item_${new Date().getTime()}`;
+                    let newItem = {};
+                    if (elementType == 'text') {
+                        newItem = {
+                            id: itemId,
+                            top: 160,
+                            left: 160,
+                            width: 180,
+                            height: 30,
+                            type: 'text',
+                            active:false,
+                            fontSize:14,
+                            bold: false,
+                            italic:false,
+                            align:'left',
+                            direction:'horizontal',
+                            color:'#000000',
+                            rotate: 0,
+                            value: '新增文字'
+                        };
+                    } else if (elementType == 'image') {
+                        newItem = {
+                            id: itemId,
+                            top: 160,
+                            left: 160,
+                            width: 256,
+                            height: 256,
+                            type: 'img',
+                            active:false,
+                            rotate: 0,
+                            value: ''
+                        };
+                    }
+                    layer.items.push(newItem);
+                    break;
+                }
+            }
+        },
+
         drawerClick(e) {
             const excludeClasses = ["d-drawer", "d-drawer-container"];
             const elementClasses = e.target.className.split(" ");
@@ -146,7 +205,7 @@ export default {
 
         keydown(e) {
             const key = this.getKey(e);
-            const allowKeys = ["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "Delete", "Control"]
+            const allowKeys = ["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "Delete", "Control", "Alt", "Shift"]
             if (allowKeys.indexOf(key) > -1) {
                 e.preventDefault && e.preventDefault();
             }
@@ -161,7 +220,13 @@ export default {
                     this.deleteSelectedElement();
                     break;
                 case "Control":
-                    this.ctrlHold = true;
+                    this.ctrlKey = true;
+                    break;
+                case "Alt":
+                    this.altKey = true;
+                    break;
+                case "Shift":
+                    this.shiftKey = true;
                     break;
                 default:
                     // console.log(e)
@@ -169,13 +234,19 @@ export default {
         },
 
         keyup(e) {
-            const allowKeys = ["Control"]
+            const allowKeys = ["Control", "Alt", "Shift"]
             if (allowKeys.indexOf(e.key) > -1) {
                 e.preventDefault && e.preventDefault();
             }
             switch (e.key) {
                 case "Control":
-                    this.ctrlHold = false;
+                    this.ctrlKey = false;
+                    break;
+                case "Alt":
+                    this.altKey = false;
+                    break;
+                case "Shift":
+                    this.shiftKey = false;
                     break;
                 default:
             }
