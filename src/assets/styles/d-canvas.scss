@@ -64,16 +64,17 @@ $transparent: #fff0;
 
     /* 组件区域 */
     .d-components {
-        width: calc(0.2 * $canvasWidth - 40px);
-        height: calc($canvasHeight - 40px);
+        width: calc(0.1 * $canvasWidth - 10px);
+        height: calc($canvasHeight - 10px);
         position: relative;
         float: left;
-        padding: 20px;
+        padding: 5px;
         background-color: $componentsPanelBgColor;
 
         .d-components-kit {
-            width: 50px;
-            height: 50px;
+            width: 80%;
+            min-width: 100px;
+            height: 20px;
             border: 1px solid $inActiveColor;
             float: left;
             margin: 5px;
@@ -82,7 +83,7 @@ $transparent: #fff0;
 
     /* 绘画区域 */
     .d-drawer {
-        width: calc(0.6 * $canvasWidth);
+        width: calc(0.7 * $canvasWidth);
         height: $canvasHeight;
         // display: grid;
         justify-content: center;
