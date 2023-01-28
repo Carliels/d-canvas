@@ -28,6 +28,7 @@ export default {
           ]},
           {id:'layer_3', name:"图层3", active:false, visible: true, items: [
             {id: 'item_3_1', top: 160, left: 160, width: 180, height: 30, type: 'text', active:false, fontSize:14, bold: false, italic:false, align:'left', direction:'horizontal', color:'#000000', rotate: 45, value: 'Hello Elements!No:3'},
+            {id: 'item_3_2', top: 260, left: 10, width: 180, height: 30, type: 'line', active:false, direction:'horizontal', color:'#000000', rotate: 0},
           ]},
         ],
         version: 0

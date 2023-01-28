@@ -10,6 +10,9 @@
         <template v-else-if="item.type=='img'">
             <DImage :value="item" />
         </template>
+        <template v-else-if="item.type=='line'">
+            <DLine :value="item" />
+        </template>
         <template v-else>
             <span class="canvas-text">未知组件类型:{{item.type}}</span>
         </template>
@@ -56,11 +59,11 @@
 </template>
 
 <script>
-import {DText,DImage} from './elements';
+import {DText,DImage,DLine} from './elements';
 export default {
     name: 'DElement',
     components: {
-        DText,DImage
+        DText,DImage,DLine
     },
     props: {
         value: {
